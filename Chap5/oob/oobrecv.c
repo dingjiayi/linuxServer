@@ -42,12 +42,14 @@ int main(int argc, char *agrv[])
     assert(count > 0);
     printf("get %d char(s). info =%s", count, buff);
     memset(buff, '\0', BUFF_SIZE);
-    count = recv(accept_sock, buff, BUFF_SIZE - 1, 0);
+    count = recv(accept_sock, buff, BUFF_SIZE - 1, MSG_OOB);
     assert(count > 0);
     printf("get %d char(s). info =%s", count, buff);
     count = recv(accept_sock, buff, BUFF_SIZE - 1, 0);
     assert(count > 0);
     printf("get %d char(s). info =%s", count, buff);
-
+    close(accept_sock);
+    close(sockfd);
+    
     return 0;
 }
