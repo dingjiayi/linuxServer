@@ -25,7 +25,7 @@ int main(int argc, char *agrv[])
     server_addr.port = port;
     inet_pton(AF_INET, ip, &server_addr.sin_addr);
 
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int sockfd = socket(PF_INET, SOCK_STREAM, 0);
     assert(sockfd > 0);
     int ret = bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
     assert(ret ==0 );
