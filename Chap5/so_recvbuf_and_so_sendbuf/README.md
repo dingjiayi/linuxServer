@@ -16,3 +16,5 @@
 ## 5. 设置接受缓冲区大小为M >= 2304, 实际为2M ##
 
 ### <font color=green>结论：当我们用setsockopt来设置TCP的接收缓冲区和发送缓冲区 的大小时，系统都会将其值加倍，并且不得小于某个最小值。</font> ###
+
+### <font color=green> 参数/proc/sys/net/ipv4/tcp_rmem 和/proc/sys/net/ipv4/tcp_wmem 对于缓冲区大小决定非常重要 min default max </font> ###
