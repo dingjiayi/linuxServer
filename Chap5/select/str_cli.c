@@ -1,5 +1,6 @@
-/* 
+/*
 * @Author: dingjiayi
+* @comment: select 和多个客户端进行“交互”
 */
 
 #include <stdio.h>
@@ -7,9 +8,6 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <arpa/inet.h>
-#include <typesizes.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <sys/select.h>
 #include <unistd.h>
 #include <netinet/in.h>
@@ -17,6 +15,8 @@
 #define SERV_PORT  (12345)
 #define LISTENQ     (1024)
 #define BUFF_SIZE   (1024)
+
+const char* SERVER_IP = "192.168.37.129";
 
 int main() {
 
@@ -26,7 +26,7 @@ int main() {
     socklen_t clilen =0;
     char remote[INET_ADDRSTRLEN +1];
     char buf[BUFF_SIZE];
-    struck sockaddr_in client_addr, server_addr;
+    struct sockaddr_in client_addr, server_addr;
     fd_set readset, allset;
     short int client[FD_SETSIZE];
 
@@ -36,7 +36,7 @@ int main() {
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(SERV_PORT);
-    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    inet_pton(AF_INET, SERVER_IP, &server_addr.sin_addr);
     ret = bind(listenfd, (struct sockaddr*) &server_addr, sizeof(server_addr));
     assert(ret >=0);
 
@@ -61,9 +61,9 @@ int main() {
 
         if (FD_ISSET(listenfd, &readset)){    /* new client connection */
             printf("listening socket readable\n");
-            sleep(5);
             clilen = sizeof(client_addr);
-            connfd = accept(listenfd, (struct sockaddr*) &client_addr, sizeof(client_addr));
+
+            connfd = accept(listenfd, (struct sockaddr*) &client_addr, &clilen);
             printf("new client: %s, port %d\n", inet_ntop(AF_INET, &client_addr.sin_addr, remote, INET_ADDRSTRLEN), ntohs(client_addr.sin_port));
 
             for (i = 0; i < FD_SETSIZE; ++i)
@@ -94,8 +94,10 @@ int main() {
                     close(sockfd);
                     FD_CLR(sockfd, &allset);
                     client[i] = -1;
-                }else
+                }else{
+                    printf("Server: recv %d char(s): %s\n", n, buf);
                     write(sockfd, buf, n);
+                }
 
                 if (--nready <=0)
                     break;
