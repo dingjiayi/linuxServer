@@ -50,6 +50,6 @@ int main(int argc, char *agrv[])
     printf("get %d char(s). info =%s", count, buff);
     close(accept_sock);
     close(sockfd);
-    
+
     return 0;
 }
