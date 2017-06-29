@@ -1,28 +1,23 @@
-//
-// 带外数据 “紧急指针数据” 接收端
-//
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #define BUFF_SIZE  1024
-int main(int argc, char *agrv[])
+int main(int argc, char *argv[])
 {
-    if(argc < 2){
-        printf("argc error. argc: %d\n", argc);
-        return 0;
-    }
 
-    const char *ip = argv[1];
-    unsigned short int port = htos(atoi(argv[2]));
+    const char *ip = "192.168.37.129";
+    unsigned short int port = htons(12345);
     struct sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.port = port;
+    server_addr.sin_port = port;
     inet_pton(AF_INET, ip, &server_addr.sin_addr);
 
     int sockfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -33,7 +28,8 @@ int main(int argc, char *agrv[])
 
     struct sockaddr_in client_addr;
     memset(&client_addr, 0, sizeof(client_addr));
-    int accept_sock = accept(sockfd, (struct sockaddr*) &client_addr, sizeof(client_addr));
+    socklen_t client_addrlen = sizeof(client_addr);
+    int accept_sock = accept(sockfd, (struct sockaddr*) &client_addr, &client_addrlen);
     assert(accept_sock > 0);
 
     char buff[BUFF_SIZE];
